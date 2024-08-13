@@ -64,13 +64,32 @@
         }
 
         function validateForm() {
-            let seatCode = document.getElementById("seatCode").value;
+            let seatCode = document.getElementById("seatCode").value.toUpperCase();
             let customerName = document.getElementById("customerName").value;
+            let seatCodePattern = /^[1-4][A-E]$/i;
+            let reservations = [];
+
+            try {
+                reservations = JSON.parse(document.getElementById("reservationData").textContent);
+            } catch (e) {
+                console.error("Error parsing reservations data:", e);
+            }
 
             if (!seatCode || !customerName) {
                 alert("Seat or Name cannot be blank.");
                 return false;
             }
+
+            if (!seatCodePattern.test(seatCode)) {
+                alert("Please follow the seat code format (e.g., 1A, 2B).");
+                return false;
+            }
+
+            if (reservations.some(reservation => reservation.seatCode.toUpperCase() === seatCode)) {
+                alert("This seat has been taken.");
+                return false;
+            }
+
             return true;
         }
 
@@ -86,8 +105,6 @@
 </head>
 <body>
 <div layout:fragment="content" class="container my-5">
-    <h1 class="mb-4">Seat Reservation System</h1>
-    <h2 class="mb-4">Seat Reservation Table</h2>
     <table class="table table-bordered table-seats">
         <thead>
         <tr>
@@ -135,12 +152,12 @@
     <form th:action="@{/reserve}" method="post" onsubmit="return validateForm()">
         <div class="mb-3">
             <label for="seatCode" class="form-label">Seat Code:</label>
-            <input type="text" id="seatCode" name="seatCode" class="form-control" required>
+            <input type="text" id="seatCode" name="seatCode" class="form-control">
         </div>
 
         <div class="mb-3">
             <label for="customerName" class="form-label">Customer Name:</label>
-            <input type="text" id="customerName" name="customerName" class="form-control" required>
+            <input type="text" id="customerName" name="customerName" class="form-control">
         </div>
 
         <div class="mb-3">
@@ -177,6 +194,7 @@
             </tbody>
         </table>
     </div>
+    <div id="reservationData" th:utext="${reservationsJson}" style="display:none;"></div>
 </div>
 </body>
 </html>
