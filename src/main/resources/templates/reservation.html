@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorate="layout.html">
+<head>
+    <title>Seat Reservation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: seagreen;
+            color: white;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: yellow;
+        }
+
+        .table-seats td {
+            color: lightblue;
+        }
+
+        .table-seats th {
+            color: white;
+        }
+
+        .records-container {
+            background-color: black;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            width: 90%;
+        }
+
+        .table-records thead tr {
+            border-bottom: 2px solid white;
+        }
+
+        .table-records tbody tr {
+            color: lightblue;
+        }
+
+        .btn-danger {
+            background-color: red;
+            border-color: red;
+        }
+
+        .btn-success {
+            background-color: green;
+            border-color: green;
+        }
+
+        .btn-primary {
+            background-color: blue;
+            border-color: blue;
+        }
+    </style>
+    <script>
+        function confirmDelete(url) {
+            if (confirm("Are you sure you want to delete this reservation?")) {
+                window.location.href = url;
+            }
+        }
+
+        function validateForm() {
+            let seatCode = document.getElementById("seatCode").value;
+            let customerName = document.getElementById("customerName").value;
+
+            if (!seatCode || !customerName) {
+                alert("Seat or Name cannot be blank.");
+                return false;
+            }
+            return true;
+        }
+
+        function setCurrentDate() {
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById("transactionDate").value = today;
+        }
+
+        window.onload = function() {
+            setCurrentDate();
+        }
+    </script>
+</head>
+<body>
+<div layout:fragment="content" class="container my-5">
+    <h1 class="mb-4">Seat Reservation System</h1>
+    <h2 class="mb-4">Seat Reservation Table</h2>
+    <table class="table table-bordered table-seats">
+        <thead>
+        <tr>
+            <th>A</th>
+            <th>B</th>
+            <th>C</th>
+            <th>D</th>
+            <th>E</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:text="${reservations[0] != null ? reservations[0].customerName : '1A'}">1A</td>
+            <td th:text="${reservations[1] != null ? reservations[1].customerName : '1B'}">1B</td>
+            <td th:text="${reservations[2] != null ? reservations[2].customerName : '1C'}">1C</td>
+            <td th:text="${reservations[3] != null ? reservations[3].customerName : '1D'}">1D</td>
+            <td th:text="${reservations[4] != null ? reservations[4].customerName : '1E'}">1E</td>
+        </tr>
+        <tr>
+            <td th:text="${reservations[5] != null ? reservations[5].customerName : '2A'}">2A</td>
+            <td th:text="${reservations[6] != null ? reservations[6].customerName : '2B'}">2B</td>
+            <td th:text="${reservations[7] != null ? reservations[7].customerName : '2C'}">2C</td>
+            <td th:text="${reservations[8] != null ? reservations[8].customerName : '2D'}">2D</td>
+            <td th:text="${reservations[9] != null ? reservations[9].customerName : '2E'}">2E</td>
+        </tr>
+        <tr>
+            <td th:text="${reservations[10] != null ? reservations[10].customerName : '3A'}">3A</td>
+            <td th:text="${reservations[11] != null ? reservations[11].customerName : '3B'}">3B</td>
+            <td th:text="${reservations[12] != null ? reservations[12].customerName : '3C'}">3C</td>
+            <td th:text="${reservations[13] != null ? reservations[13].customerName : '3D'}">3D</td>
+            <td th:text="${reservations[14] != null ? reservations[14].customerName : '3E'}">3E</td>
+        </tr>
+        <tr>
+            <td th:text="${reservations[15] != null ? reservations[15].customerName : '4A'}">4A</td>
+            <td th:text="${reservations[16] != null ? reservations[16].customerName : '4B'}">4B</td>
+            <td th:text="${reservations[17] != null ? reservations[17].customerName : '4C'}">4C</td>
+            <td th:text="${reservations[18] != null ? reservations[18].customerName : '4D'}">4D</td>
+            <td th:text="${reservations[19] != null ? reservations[19].customerName : '4E'}">4E</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="mt-5 mb-4">There are <span th:text="${remainingSeats}">20</span> remaining seats</h2>
+
+    <form th:action="@{/reserve}" method="post" onsubmit="return validateForm()">
+        <div class="mb-3">
+            <label for="seatCode" class="form-label">Seat Code:</label>
+            <input type="text" id="seatCode" name="seatCode" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="customerName" class="form-label">Customer Name:</label>
+            <input type="text" id="customerName" name="customerName" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="transactionDate" class="form-label">Transaction Date:</label>
+            <input type="date" id="transactionDate" name="transactionDate" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Reserve</button>
+    </form>
+
+    <div class="records-container mt-5">
+        <h2>Reservations</h2>
+        <table class="table table-bordered table-records">
+            <thead>
+            <tr>
+                <th>Transaction Code</th>
+                <th>Date</th>
+                <th>Seat Number</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reservation : ${reservationList}">
+                <td th:text="${reservation.id}"></td>
+                <td th:text="${reservation.transactionDate}"></td>
+                <td th:text="${reservation.seatCode}"></td>
+                <td th:text="${reservation.customerName}"></td>
+                <td>
+                    <a th:href="@{/edit/{id}(id=${reservation.id})}" class="btn btn-success">Edit</a>
+                    <a th:href="@{/delete/{id}(id=${reservation.id})}" onclick="confirmDelete(this.getAttribute('href'))" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
